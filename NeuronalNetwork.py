@@ -29,7 +29,7 @@ class NeuronalNetwork:
 
         #self.print_pesos()
     
-    def ajuste(self,X,y,tasa_aprendizaje=0.2,epocas=100000):
+    def ajuste(self,X,y,tasa_aprendizaje=0.02,epocas=100000):
         # Agrego columna de unos a las entradas X
         # Con esto agregamos la unidad de Bias a la capa de entrada
         ones = np.atleast_2d(np.ones(X.shape[0]))
@@ -67,11 +67,7 @@ class NeuronalNetwork:
                 delta = np.atleast_2d(deltas[i])
                 self.pesos[i] += tasa_aprendizaje * capas.T.dot(delta)
 
-            if k % 1000 == 0: 
-                self.aprendizaje(error,k)
-                self.errores.append(error)
-                self.epoca.append(k)
-        self.graficar_aprendizaje()
+            if k % 10000 == 0: self.aprendizaje(error,k)
 
     def predict(self, x): 
         ones = np.atleast_2d(np.ones(x.shape[0])) #convierte un vertor a 2 dimenciones ones llena un vector con unos
@@ -94,13 +90,7 @@ class NeuronalNetwork:
     def aprendizaje(self,error,epoca):
         print("Error: ",error)
         print("epoca: ",epoca)
-    
-    def graficar_aprendizaje(self):
-        plt.plot(self.epoca,self.errores)
-        plt.xlabel('Epocas')
-        plt.ylabel('Erro')
-        plt.title('Aprendizaje')
-        plt.show()
+        
     
 #function de activación
 def tanh(x):
@@ -137,11 +127,27 @@ y = np.array([
     [0,1,1,0], # retroceder
     [0,1,1,0]  # retroceder
 ])
-nn.ajuste(X, y, tasa_aprendizaje=0.03,epocas=40001)
+nn.ajuste(X, y, tasa_aprendizaje=0.2,epocas=500000)
 
 index=0
 for e in X:
     prediccion = nn.predict(e)
     print("X:",e,"esperado:",y[index],"obtenido:", valNN(prediccion[0]),valNN(prediccion[1]),valNN(prediccion[2]),valNN(prediccion[3]))
     index=index+1
+
+
+deltas = nn.get_deltas()
+print(deltas)
+valores=[]
+index=0
+for arreglo in deltas:
+    valores.append(arreglo[1][0] + arreglo[1][1])
+    index=index+1
+
+plt.plot(range(len(valores)), valores, color='b')
+plt.ylim([0, 0.4])
+plt.ylabel('Cost')
+plt.xlabel('Epocas')
+plt.tight_layout()
+plt.show()
         
