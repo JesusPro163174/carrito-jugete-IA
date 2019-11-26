@@ -1,0 +1,1 @@
+#esta clase creara la red neuronal dinamicamente
